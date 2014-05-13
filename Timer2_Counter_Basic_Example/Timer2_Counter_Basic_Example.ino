@@ -1,6 +1,6 @@
 /*
-Timer2 Counter Basic Example
--A timer function with 0.5us precision, rather than 4us precision like the built-in Arduino micros() function has.
+Timer2 Counter Basic Example - Demonstrates use of my Timer2_Counter, which is a timer function with 0.5us precision, 
+                               rather than 4us precision like the built-in Arduino micros() function has.
 By Gabriel Staples
 Visit my blog at http://electricrcaircraftguy.blogspot.com/
 -My contact info is available by clicking the "Contact Me" tab at the top of my blog.
@@ -13,6 +13,7 @@ Updated: 9 Feb. 2014
 /*
 ===================================================================================================
   LICENSE & DISCLAIMER
+  
   Copyright (C) 2014 Gabriel Staples.  All right reserved.
   
   This code was written entirely at home, during my own personal time, and is neither a product of work nor my employer.
