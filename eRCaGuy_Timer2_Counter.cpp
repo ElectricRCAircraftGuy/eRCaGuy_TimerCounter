@@ -7,7 +7,7 @@ Visit my blog at http://electricrcaircraftguy.blogspot.com/
 -Please support my work & contributions by buying something here: https://sites.google.com/site/ercaguystore1/
 My original post containing this code can be found here: http://electricrcaircraftguy.blogspot.com/2014/02/Timer2Counter-more-precise-Arduino-micros-function.html
 Written: 7 Dec. 2013
-Last Updated: 23 Feb. 2014
+Last Updated: 13 May 2014
 */
 
 /*
@@ -15,13 +15,12 @@ Last Updated: 23 Feb. 2014
   LICENSE & DISCLAIMER
   Copyright (C) 2014 Gabriel Staples.  All right reserved.
   
-  This code was written entirely at home, during my own personal time, and is neither a product of work nor my employer.
-  Furthermore, unless otherwise stated, it is owned entirely by myself.
-  
   ------------------------------------------------------------------------------------------------
-  License: GNU General Public License Version 3 (GPLv3) - http://www.gnu.org/licenses/gpl.html
+  License: GNU General Public License Version 3 (GPLv3) - https://www.gnu.org/licenses/gpl.html
   ------------------------------------------------------------------------------------------------
 
+  This file is part of eRCaGuy_Timer2_Counter.
+  
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
@@ -40,32 +39,27 @@ Last Updated: 23 Feb. 2014
 /*
 CODE DESCRIPTION:
 BACKGROUND:
--This code uses Timer2 to create a more precise timer than micros().  Micros() updates only every 4us.  However, I want something that will update every 0.5us, and that's 
-what this provides. 
+-This code uses Timer2 to create a more precise timer than micros().  Micros() updates only every 4us.  However, I want something that will update every 0.5us, and that's what this provides. 
 -The downside is that it changes the behavior of PWM output (using analogWrite) on Pins 3 & 11.  Use of my Timer2_Counter also interferes with the "tone()" library. 
---Per the documentation on the tone library, it says that it interferes with PWM output on pins 3 & 11 as well--meaning that use of my Timer2_Counter will also prevent
-  using the tone() library simultaneously.  See here for details: http://arduino.cc/en/Reference/tone
--The upside is that I have managed to get a precise timer using the 8-bit Timer2, rather than the 16-bit Timer1, so that I can keep the Timer1 unmodified so I can continue
- to use the servo library as desired.  Note here that the servo library relies on the Atmega328 16-bit Timer1.  I have deciphered this by knowing that
- A) using the servo library at all disables PWM output on pins 9 & 10; see here: http://www.arduino.cc/en/Reference/Servo
- and B) PWM on pins 9 & 10 is controlled by Timer1; see here: http://playground.arduino.cc/Main/TimerPWMCheatsheet
--Note: every now and then, but not very often, you will see that the value returned by get_T2_count or get_T2_micros is late by ~4us.  This is because Timer2 is only
- an 8-bit timer, so every 128us the overflow interrupt is called to increment the overflow counter, and stepping into and out of the interrupt takes 4~5us
- according to Nick Gammon. Source: Nick Gammon; "Interrupts" article; "How long does it take to execute an ISR?" section, found here: http://www.gammon.com.au/forum/?id=11488
+--Per the documentation on the tone library, it says that it interferes with PWM output on pins 3 & 11 as well--meaning that use of my Timer2_Counter will also prevent using the tone() library simultaneously.  See here for details: http://arduino.cc/en/Reference/tone
+-The upside is that I have managed to get a precise timer using the 8-bit Timer2, rather than the 16-bit Timer1, so that I can keep the Timer1 unmodified so I can continue to use the servo library as desired.  Note here that the servo library relies on the Atmega328 16-bit Timer1.  I have deciphered this by knowing that A) using the servo library at all disables PWM output on pins 9 & 10; see here: http://www.arduino.cc/en/Reference/Servo; and B) PWM on pins 9 & 10 is controlled by Timer1; see here: http://playground.arduino.cc/Main/TimerPWMCheatsheet
+-Note: every now and then, but not very often, you will see that the value returned by get_T2_count or get_T2_micros is late by ~4us.  This is because Timer2 is only an 8-bit timer, so every 128us the overflow interrupt is called to increment the overflow counter, and stepping into and out of the interrupt takes 4~5us according to Nick Gammon. Source: Nick Gammon; "Interrupts" article; "How long does it take to execute an ISR?" section, found here: http://www.gammon.com.au/forum/?id=11488
+ 
 IMPLEMENTATION:
--To use this code, simply copy this file (I have it named "Timer2_Counter.ino") into your directory (folder) where you are already working on a specific Arduino file.  
-Next time you open up your main file you are working on, this code will automatically open up as an additional tab in the Arduino IDE.  
+-Install this library like you would any standard Arduino library.  
 -I have tested this code ONLY on Arduinos using the Atmega328 microcontroller; more specifically, the Arduino Nano.
 
 I heavily reference the 660 pg. Atmega328 datasheet, which can be found here:  http://www.atmel.com/Images/Atmel-8271-8-bit-AVR-Microcontroller-ATmega48A-48PA-88A-88PA-168A-168PA-328-328P_datasheet.pdf
 
-
-Version History:
-(most recent event last; format year-month-day, ex: 20131211 is Dec. 11, 2013):
-20131211 - completed first iteration of code
+VERSION HISTORY:
+(most recent event on top; format year-month-day, ex: 20131211 is Dec. 11, 2013):
+---------------------------------------------------------------------------------
+20140513 - made this code into a true Arduino library
 20140223 - minor change to documentation: added note about the Tone library being affected by this code too
+20131211 - completed first iteration of code
 
-============================================================================================================================================================================
+
+=====================================================================================================================================================
 Function Definitions
  ___  _   _  _  _   ___  _____  ___  ___   _  _      ___   ___  ___  ___  _  _  ___  _____  ___  ___   _  _  ___ 
 | __|| | | || \| | / __||_   _||_ _|/ _ \ | \| |    |   \ | __|| __||_ _|| \| ||_ _||_   _||_ _|/ _ \ | \| |/ __|
@@ -99,7 +93,9 @@ T2_overflow_interrupt_off(); //turns off the Timer 2 overflow interrrupt so that
                        //automatically.  You have to wait > 128us before you see any missed overflow counts.
 T2_overflow_interrupt_on(); //turns Timer 2's overflow interrupt back on, so that the overflow counter will start to increment again; see "T2_overflow_interrupt_off()"
                             //explanation for more details.
-============================================================================================================================================================================
+					  
+***********************UPDATE: 13 MAY 2014: SEE THE FUNCTION DEFINITIONS BELOW FOR ANY ADDITIONAL FUNCTIONS WHICH MAY EXIST AT THIS TIME
+=====================================================================================================================================================
 References:
 -cool font, type "small", from: http://www.network-science.de/ascii/
 
@@ -108,29 +104,38 @@ Additional Resources:
 -Nick Gammon's "Interrupts" article - http://www.gammon.com.au/forum/?id=11488
 */
 
+#if ARDUINO >= 100
+ #include <Arduino.h>
+#else
+ #include <WProgram.h>
+#endif
 
-//Set up Global Variables
-//volatile (used in ISRs)
-volatile unsigned long T2_overflow_count = 0; //initialize Timer2 overflow counter
-volatile unsigned long T2_total_count = 0; //initialize Timer2 total counter
-//normal variables
-byte tccr2a_save; //initialize; will be used to backup default settings
-byte tccr2b_save; //initialize; will be used to backup default settings
+#include "eRCaGuy_Timer2_Counter.h"
 
+//pre-instantiate an object of this library class, for use by the ISR; call it "timer2"
+eRCaGuy_Timer2_Counter timer2;
 
 //Interrupt Service Routine (ISR) for when Timer2's counter overflows; this will occur every 128us
 ISR(TIMER2_OVF_vect) //Timer2's counter has overflowed 
 {
-  T2_overflow_count++; //increment the timer2 overflow counter
+  timer2.T2_increment_overflow_count(); //increment the timer2 overflow counter
 }
 
+//define class constructor method
+eRCaGuy_Timer2_Counter::eRCaGuy_Timer2_Counter()
+{
+  //initialize member variables
+  _T2_overflow_count = 0;
+  _T2_total_count = 0;
+}
 
-//Configure Timer2
-void setup_T2()
+//setup_T2() --Configure Timer2
+//This function MUST be called before any of the other Timer2 functions will work.  This function will generally only be called one time in your setup() loop. "setup_T2()" prepares Timer2 and speeds it up to provide greater precision than micros() can give.
+void eRCaGuy_Timer2_Counter::setup_T2()
 {
   //backup variables
-  tccr2a_save = TCCR2A; //first, backup some values
-  tccr2b_save = TCCR2B; //backup some more values
+  _tccr2a_save = TCCR2A; //first, backup some values
+  _tccr2b_save = TCCR2B; //backup some more values
   
   //increase the speed of timer2; see below link, as well as the datasheet pg 158-159.
   TCCR2B = TCCR2B & 0b11111000 | 0x02; //Timer2 is now faster than default; see here for more info: http://playground.arduino.cc/Main/TimerPWMCheatsheet
@@ -148,9 +153,8 @@ void setup_T2()
   TCCR2B &= 0b11110111; //set WGM22 to 0 (see pg. 158).
 }  
   
-
 //get total count for Timer2
-unsigned long get_T2_count()
+unsigned long eRCaGuy_Timer2_Counter::get_T2_count()
 {
   noInterrupts(); //prepare for critical section of code
   uint8_t tcnt2_save = TCNT2; //grab the counter value from Timer2
@@ -161,63 +165,64 @@ unsigned long get_T2_count()
                         //to 127.5us in any time obtained using the T2 counter (ex: T2_micros). (Note: 255 counts / 2 counts/us = 127.5us)
                         //Note: this line of code DID in fact fix the error just described, in which I periodically saw an error of ~127.5us in some values read in
                         //by some PWM read code I wrote.
-    T2_overflow_count++; //force the overflow count to increment
+    _T2_overflow_count++; //force the overflow count to increment
     TIFR2 |= 0b00000001; //reset Timer2 overflow flag since we just manually incremented above; see datasheet pg. 160; this prevents execution of Timer2's overflow ISR
   }
-  T2_total_count = T2_overflow_count*256 + tcnt2_save; //get total Timer2 count
+  _T2_total_count = _T2_overflow_count*256 + tcnt2_save; //get total Timer2 count
   interrupts(); //allow interrupts again
-  return T2_total_count;
+  return _T2_total_count;
 }
 
-
 //get the time in microseconds, as determined by Timer2; the precision will be 0.5 microseconds instead of the 4 microsecond precision of micros()
-float get_T2_micros()
+float eRCaGuy_Timer2_Counter::get_T2_micros()
 {
   float T2_micros = get_T2_count()/2.0; 
   return T2_micros;
 }
 
-
 //reset Timer2's counters
-void reset_T2()
+void eRCaGuy_Timer2_Counter::reset_T2()
 {
-  T2_overflow_count = 0; //reset overflow counter
-  T2_total_count = 0; //reset total counter
+  _T2_overflow_count = 0; //reset overflow counter
+  _T2_total_count = 0; //reset total counter
   TCNT2 = 0; //reset Timer2 counter
   TIFR2 |= 0b00000001; //reset Timer2 overflow flag; see datasheet pg. 160; this prevents an immediate execution of Timer2's overflow ISR
 }
 
-
 //undo configuration changes for Timer2
-void revert_T2_to_normal()
+void eRCaGuy_Timer2_Counter::revert_T2_to_normal()
 {
   T2_overflow_interrupt_off(); //turn off Timer2 overflow interrupts
-  TCCR2A = tccr2a_save; //restore default settings
-  TCCR2B = tccr2b_save; //restore default settings
+  TCCR2A = _tccr2a_save; //restore default settings
+  TCCR2B = _tccr2b_save; //restore default settings
 }
 
-
 //same as revert_T2_to_normal()
-void unsetup_T2()
+void eRCaGuy_Timer2_Counter::unsetup_T2()
 {
   revert_T2_to_normal();
 }
 
-
 //Turn off the Timer2 Overflow Interrupt
-void T2_overflow_interrupt_off()
+void eRCaGuy_Timer2_Counter::T2_overflow_interrupt_off()
 {
 //  TIMSK2 &= 0b11111110; //use this code to DISABLE the Timer2 overflow interrupt; see datasheet pg. 159-160
   TIMSK2 &= ~(_BV(TOIE2)); //alternate code to do the above; see here for use of _BV: http://194.81.104.27/~brian/microprocessor/BVMacro.pdf 
 }
 
-
 //Turn the Timer2 Overflow Interrupt Back On
-void T2_overflow_interrupt_on()
+void eRCaGuy_Timer2_Counter::T2_overflow_interrupt_on()
 {
 //  TIMSK2 |= 0b00000001; //enable Timer2 overflow interrupt. (by making the right-most bit in TIMSK2 a 1); see datasheet pg. 159-160
   TIMSK2 |= _BV(TOIE2); //alternate code to do the above; see here for use of _BV: http://194.81.104.27/~brian/microprocessor/BVMacro.pdf 
 }
 
+//Increment overflow counter
+void eRCaGuy_Timer2_Counter::T2_increment_overflow_count()
+{
+  _T2_overflow_count++;
+}
+  
+  
 
 
