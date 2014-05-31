@@ -8,7 +8,7 @@ Visit my blog at http://electricrcaircraftguy.blogspot.com/
 -Please support my work & contributions by buying something here: https://sites.google.com/site/ercaguystore1/
 My original post containing this code can be found here: http://electricrcaircraftguy.blogspot.com/2014/02/Timer2Counter-more-precise-Arduino-micros-function.html
 Written: 8 Feb. 2014
-Updated: 17 May. 2014
+Updated: 30 May. 2014
 
 History (newest on top):
 20140517 - Timer2_Counter is now a true library!  This is the first example utilizing Timer2_Counter as an actual, installed library. This was a huge challenge for me,
@@ -61,9 +61,9 @@ History (newest on top):
   
 void setup() {
   //configure Timer2
-  timer2.setup_T2(); //this MUST be done before the other Timer2_Counter functions work; Note: since this messes up PWM outputs on pins 3 & 11, as well as 
-                     //interferes with the tone() library (http://arduino.cc/en/reference/tone), you can always revert Timer2 back to normal by calling 
-                     //timer2.unsetup_T2()
+  timer2.setup(); //this MUST be done before the other Timer2_Counter functions work; Note: since this messes up PWM outputs on pins 3 & 11, as well as 
+                  //interferes with the tone() library (http://arduino.cc/en/reference/tone), you can always revert Timer2 back to normal by calling 
+                  //timer2.unsetup()
   
   //prepare serial
   Serial.begin(115200);  
@@ -71,9 +71,9 @@ void setup() {
   //Output a header of info:
   Serial.println(F("Notes:"));
   Serial.println(F("micros() has a precision of 4us"));
-  Serial.println(F("get_T2_count() with unsigned long final data type has a final precision of 1us, and is fast"));
-  Serial.println(F("get_T2_count() with float final data type has a final precision of 0.5us, and is not quite as fast"));
-  Serial.println(F("get_T2_micros() has a precision of 0.5us, and is slower than the above 2 methods, so one of the above 2 methods is preferred"));
+  Serial.println(F("get_count() with unsigned long final data type has a final precision of 1us, and is fast"));
+  Serial.println(F("get_count() with float final data type has a final precision of 0.5us, and is not quite as fast"));
+  Serial.println(F("get_micros() has a precision of 0.5us, and is slower than the above 2 methods, so one of the above 2 methods is preferred"));
   Serial.println(F("=============================================="));
 }
 
@@ -81,9 +81,9 @@ void setup() {
 void loop() {
   //Grab Start Times
   unsigned long t_start1 = micros(); //us; get the current time using the built-in Arduino function micros(), to a precision of 4us
-  unsigned long t_start2 = timer2.get_T2_count(); //count units of 0.5us each; get my Timer2 count, where each count represents 0.5us; PREFERRED METHOD
-  float t_start3 = timer2.get_T2_micros(); //us; get the current time using my Timer2; Note: THE METHOD ONE LINE ABOVE IS PREFERRED OVER THIS METHOD
-                                    //since using floats is a tiny bit slower than using unsigned longs
+  unsigned long t_start2 = timer2.get_count(); //count units of 0.5us each; get my Timer2 count, where each count represents 0.5us; PREFERRED METHOD
+  float t_start3 = timer2.get_micros(); //us; get the current time using my Timer2; Note: THE METHOD ONE LINE ABOVE IS PREFERRED OVER THIS METHOD
+                                        //since using floats is a tiny bit slower than using unsigned longs
   
   //Wait a bit                       
   delayMicroseconds(1000); //wait this # of microseconds; Note: "the largest value that will produce an accurate delay is 16383" - http://arduino.cc/en/Reference/DelayMicroseconds
@@ -92,8 +92,8 @@ void loop() {
   
   //Grab End Times
   unsigned long t_end1 = micros(); //us; using built-in Arduino function that has a precision of 4us
-  unsigned long t_end2 = timer2.get_T2_count(); //count units of 0.5us each; using my Timer2 count, where each count represents 0.5us
-  float t_end3 = timer2.get_T2_micros(); //us; using my Timer2 micros, which has a precision of 0.5us
+  unsigned long t_end2 = timer2.get_count(); //count units of 0.5us each; using my Timer2 count, where each count represents 0.5us
+  float t_end3 = timer2.get_micros(); //us; using my Timer2 micros, which has a precision of 0.5us
   
   //Calculate elapsed times
   unsigned long t_elapsed1 = t_end1 - t_start1; //us; using micros()
@@ -106,13 +106,13 @@ void loop() {
   Serial.print(F("elapsed time using micros() = "));
   Serial.print(t_elapsed1);
   Serial.println(F("us"));
-  Serial.print(F("elapsed time using get_T2_count() with unsigned long final data type = "));
+  Serial.print(F("elapsed time using get_count() with unsigned long final data type = "));
   Serial.print(t_elapsed2_ul);
   Serial.println(F("us"));
-  Serial.print(F("elapsed time using get_T2_count() with float final data type = "));
+  Serial.print(F("elapsed time using get_count() with float final data type = "));
   Serial.print(t_elapsed2_fl);
   Serial.println(F("us"));
-  Serial.print(F("elapsed time using get_T2_micros() = "));
+  Serial.print(F("elapsed time using get_micros() = "));
   Serial.print(t_elapsed3);
   Serial.println(F("us"));
   

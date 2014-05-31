@@ -8,7 +8,7 @@ Visit my blog at http://electricrcaircraftguy.blogspot.com/
 -Please support my work & contributions by buying something here: https://sites.google.com/site/ercaguystore1/
 My original post containing this code can be found here: http://electricrcaircraftguy.blogspot.com/2014/02/Timer2Counter-more-precise-Arduino-micros-function.html
 Written: 17 May 2014
-Updated: 17 May 2014
+Updated: 30 May 2014
 */
 
 /*
@@ -56,9 +56,9 @@ Updated: 17 May 2014
   
 void setup() {
   //configure Timer2
-  timer2.setup_T2(); //this MUST be done before the other Timer2_Counter functions work; Note: since this messes up PWM outputs on pins 3 & 11, as well as 
-                     //interferes with the tone() library (http://arduino.cc/en/reference/tone), you can always revert Timer2 back to normal by calling 
-                     //timer2.unsetup_T2()
+  timer2.setup(); //this MUST be done before the other Timer2_Counter functions work; Note: since this messes up PWM outputs on pins 3 & 11, as well as 
+                  //interferes with the tone() library (http://arduino.cc/en/reference/tone), you can always revert Timer2 back to normal by calling 
+                  //timer2.unsetup()
   
   //prepare serial
   Serial.begin(115200);  
@@ -66,21 +66,21 @@ void setup() {
   //Output a header of info:
   Serial.println(F("Notes:"));
   Serial.println(F("micros() has a precision of 4us"));
-  Serial.println(F("get_T2_count() with unsigned long final data type has a final precision of 1us, and is fast"));
-  Serial.println(F("get_T2_count() with float final data type has a final precision of 0.5us, and is not quite as fast"));
-  Serial.println(F("get_T2_micros() has a precision of 0.5us, and is slower than the above 2 methods, so one of the above 2 methods is preferred"));
+  Serial.println(F("get_count() with unsigned long final data type has a final precision of 1us, and is fast"));
+  Serial.println(F("get_count() with float final data type has a final precision of 0.5us, and is not quite as fast"));
+  Serial.println(F("get_micros() has a precision of 0.5us, and is slower than the above 2 methods, so one of the above 2 methods is preferred"));
   Serial.println(F("=============================================="));
 }
 
 
 void loop() {
   //declare local variables
-  static unsigned long t_start = timer2.get_T2_count(); //units of 0.5us; the count accumulated by Timer2_Counter
+  static unsigned long t_start = timer2.get_count(); //units of 0.5us; the count accumulated by Timer2_Counter
   
   //acquire time stamps
   unsigned long t_micros = micros();
-  unsigned long t_T2_count = timer2.get_T2_count(); //units of 0.5us; the count accumulated by Timer2_Counter
-  float t_T2_micros = timer2.get_T2_micros(); //us; the time value accumulated by Timer2_Counter (this is the exact same as doing timer2.get_T2_count()/2.0;)
+  unsigned long t_T2_count = timer2.get_count(); //units of 0.5us; the count accumulated by Timer2_Counter
+  float t_T2_micros = timer2.get_micros(); //us; the time value accumulated by Timer2_Counter (this is the exact same as doing timer2.get_count()/2.0;)
   
   //See if 1.000003 seconds has elapsed.  If so, print out the time stamps. Note: I am using this elapsed time because I want it to NOT be divisible by 4, so that 
   //you can hopefully see the extra precision provided by the Timer2_Counter library, which the default Arduino micros() function does not have
@@ -88,13 +88,13 @@ void loop() {
   {
     t_start = t_T2_count; //update start time
     
-    //Print times using micros(), get_T2_count(), and get_T2_micros()
+    //Print times using micros(), get_count(), and get_micros()
     //Demonstrate several ways of using these functions
     Serial.print("micros() = "); Serial.print(t_micros); Serial.println(" us");
-    Serial.print("get_T2_count() = "); Serial.print(t_T2_count); Serial.println(" (units of 0.5 us per count)");
-    Serial.print("get_T2_count()/2 = "); Serial.print(t_T2_count/2); Serial.println(" us");
-    Serial.print("get_T2_count()/2.0 = "); Serial.print(t_T2_count/2.0); Serial.println(" us");
-    Serial.print("get_T2_micros() = "); Serial.print(t_T2_micros); Serial.println(" us");
+    Serial.print("get_count() = "); Serial.print(t_T2_count); Serial.println(" (units of 0.5 us per count)");
+    Serial.print("get_count()/2 = "); Serial.print(t_T2_count/2); Serial.println(" us");
+    Serial.print("get_count()/2.0 = "); Serial.print(t_T2_count/2.0); Serial.println(" us");
+    Serial.print("get_micros() = "); Serial.print(t_T2_micros); Serial.println(" us");
     Serial.println(""); //add an extra line space
   }
 } //end of loop()
