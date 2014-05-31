@@ -65,15 +65,15 @@ class eRCaGuy_Timer2_Counter
 	
 	//FOR A FULL DESCRIPTION OF WHAT EACH METHOD BELOW DOES, REFER TO THE .CPP FILE.
 	
-	void setup_T2(); 
-	unsigned long get_T2_count();
-	float get_T2_micros();
-	void reset_T2();
-	void revert_T2_to_normal();
-	void unsetup_T2();
-	void T2_overflow_interrupt_off();
-	void T2_overflow_interrupt_on();
-	void T2_increment_overflow_count();
+	void setup(); 
+	unsigned long get_count();
+	float get_micros();
+	void reset();
+	void revert_to_normal();
+	void unsetup();
+	void overflow_interrupt_off();
+	void overflow_interrupt_on();
+	void increment_overflow_count();
 	
 	//public variables:
 	//N/A
@@ -83,9 +83,9 @@ class eRCaGuy_Timer2_Counter
 	//N/A
     //Declare private variables (ie: "member variables," or variables which are members of and accessible by this class only):
 	//volatile (used in ISRs)
-	volatile unsigned long _T2_overflow_count; //Timer2 overflow counter; updated in ISR, so must be declared volatile (see here: http://arduino.cc/en/Reference/Volatile)
+	volatile unsigned long _overflow_count; //Timer2 overflow counter; updated in ISR, so must be declared volatile (see here: http://arduino.cc/en/Reference/Volatile)
 	  //GS: for more info on static class members, see here: http://www.tutorialspoint.com/cplusplus/cpp_static_members.htm (or PDF pg. 148-149)
-	unsigned long _T2_total_count; //Timer2 total counter
+	unsigned long _total_count; //Timer2 total counter
 	byte _tccr2a_save; //will be used to backup default settings
 	byte _tccr2b_save; //will be used to backup default settings
 };

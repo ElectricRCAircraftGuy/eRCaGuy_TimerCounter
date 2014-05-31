@@ -10,15 +10,15 @@ eRCaGuy_Timer2_Counter KEYWORD1
 #######################################
 # Methods and Functions (KEYWORD2)
 #######################################
-setup_T2			KEYWORD2
-get_T2_count		KEYWORD2
-get_T2_micros		KEYWORD2
-reset_T2			KEYWORD2
-revert_T2_to_normal	KEYWORD2
-unsetup_T2			KEYWORD2
-T2_overflow_interrupt_off	KEYWORD2
-T2_overflow_interrupt_on	KEYWORD2
-T2_increment_overflow_count	KEYWORD2
+setup				KEYWORD2
+get_count			KEYWORD2
+get_micros			KEYWORD2
+reset				KEYWORD2
+revert_to_normal	KEYWORD2
+unsetup				KEYWORD2
+overflow_interrupt_off		KEYWORD2
+overflow_interrupt_on		KEYWORD2
+increment_overflow_count	KEYWORD2
 
 #######################################
 # Constants (LITERAL1)

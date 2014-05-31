@@ -7,7 +7,7 @@ Visit my blog at http://electricrcaircraftguy.blogspot.com/
 -Please support my work & contributions by buying something here: https://sites.google.com/site/ercaguystore1/
 My original post containing this code can be found here: http://electricrcaircraftguy.blogspot.com/2014/02/Timer2Counter-more-precise-Arduino-micros-function.html
 Written: 7 Dec. 2013
-Last Updated: 13 May 2014
+Last Updated: 30 May 2014
 */
 
 /*
@@ -54,6 +54,7 @@ I heavily reference the 660 pg. Atmega328 datasheet, which can be found here:  h
 VERSION HISTORY:
 (most recent event on top; format year-month-day, ex: 20131211 is Dec. 11, 2013):
 ---------------------------------------------------------------------------------
+20140530 - changed the function (method) names slightly to remove any reference to "T2" in the method names
 20140513 - made this code into a true Arduino library
 20140223 - minor change to documentation: added note about the Tone library being affected by this code too
 20131211 - completed first iteration of code
@@ -66,32 +67,30 @@ Function Definitions
 | _| | |_| || .` || (__   | |   | || (_) || .` |    | |) || _| | _|  | | | .` | | |   | |   | || (_) || .` |\__ \
 |_|   \___/ |_|\_| \___|  |_|  |___|\___/ |_|\_|    |___/ |___||_|  |___||_|\_||___|  |_|  |___|\___/ |_|\_||___/
                                                      
-setup_T2();  //This function MUST be called before any of the other Timer2 functions will work.  This function will generally only be called one time in your setup() loop.
+setup();  //This function MUST be called before any of the other Timer2 functions will work.  This function will generally only be called one time in your setup() loop.
              //"setup_T2()" prepares Timer2 and speeds it up to provide greater precision than micros() can give.
-get_T2_count();  //gets the counter from Timer 2. Returns the Timer2 counter value as an unsigned long.  Each count represents a time interval of 0.5us.
+get_count();  //gets the counter from Timer 2. Returns the Timer2 counter value as an unsigned long.  Each count represents a time interval of 0.5us.
                  //note that the time returned WILL update even in Interrupt Service Routines (ISRs), so if you call this function in an ISR, and you want the time to be
                  //as close to possible as a certain event that occured which called the ISR you are in, make sure to call "get_T2_count()" first thing when you enter
                  //the ISR.
                  //Also, note that calling "get_T2_count()" is faster than calling "get_T2_micros()," and is therefore the preferable way to measure a time interval.
                  //For example: call "get_T2_count()" at the beginning of some event, then at the end.  Take the difference and divide it by 2 to get the time interval
                  //in microseconds.
-get_T2_micros(); //returns the Timer2 microsecond time, with a precision of 0.5us, as a float.  This function is slower than calling "get_T2_count()," and therefore is not
+get_micros(); //returns the Timer2 microsecond time, with a precision of 0.5us, as a float.  This function is slower than calling "get_T2_count()," and therefore is not
                  //the preferred way of getting time.  It is better to get the time by calling "get_T2_count()" then dividing the value by 2.  By choosing whether or not
                  //you want to call "get_T2_count()" or "get_T2_micros()," you can decide if you need the extra precision of a float, or not, at the cost of having 
                  //slightly slower code.
-reset_T2(); //resets the Timer2 counters back to 0.  Very useful if you want to count up from a specific moment in time, or obtain an "elapsed time."
-revert_T2_to_normal(); //this function might also be called "unsetup_T2".  It simply returns Timer2 to its normal state that Arduino had it in prior to calling "setup_T2"
-unsetup_T2(); //the exact same as "revert_T2_to_normal()"
-T2_overflow_interrupt_off(); //turns off the Timer 2 overflow interrrupt so that you no longer interrupt your code every 128us in order to increment your overflow counter. 
+reset(); //resets the Timer2 counters back to 0.  Very useful if you want to count up from a specific moment in time, or obtain an "elapsed time."
+revert_to_normal(); //this function might also be called "unsetup_T2".  It simply returns Timer2 to its normal state that Arduino had it in prior to calling "setup_T2"
+unsetup(); //the exact same as "revert_T2_to_normal()"
+overflow_interrupt_off(); //turns off the Timer 2 overflow interrrupt so that you no longer interrupt your code every 128us in order to increment your overflow counter. 
                        //This may be desirable when you are no longer referencing the T2 counter or timer and want your main code to run a touch faster, but you don't want
                        //to call unsetup_T2() in order to change all of Timer2's settings back to default.
                        //Since an interrupt takes ~5us to execute, and my Timer2 will overflow every 128us, disabling the Timer2 overflow interrupt will prevent 
                        //you from losing that amount of time (~5us) every 128us.
                        //Source: Nick Gammon; "Interrupts" article; "How long does it take to execute an ISR?" section, found here: http://www.gammon.com.au/forum/?id=11488
-                       //Note: If you diable the Timer 2 overflow interrupt but still call get_TC_count() or get_TC_micros() at least every 128us, you will notice no 
-                       //difference in the counter, since calling get_TC_count() or get_TC_micros() also checks the interrupt flag and increments the overflow counter 
-                       //automatically.  You have to wait > 128us before you see any missed overflow counts.
-T2_overflow_interrupt_on(); //turns Timer 2's overflow interrupt back on, so that the overflow counter will start to increment again; see "T2_overflow_interrupt_off()"
+                       //Note: If you diable the Timer 2 overflow interrupt but still call get_count() or get_micros() at least every 128us, you will notice no difference in the counter, since calling get_count() or get_micros() also checks the interrupt flag and increments the overflow counter automatically.  You have to wait > 128us before you see any missed overflow counts.
+overflow_interrupt_on(); //turns Timer 2's overflow interrupt back on, so that the overflow counter will start to increment again; see "overflow_interrupt_off()"
                             //explanation for more details.
 					  
 ***********************UPDATE: 13 MAY 2014: SEE THE FUNCTION DEFINITIONS BELOW FOR ANY ADDITIONAL FUNCTIONS WHICH MAY EXIST AT THIS TIME
@@ -118,20 +117,20 @@ eRCaGuy_Timer2_Counter timer2;
 //Interrupt Service Routine (ISR) for when Timer2's counter overflows; this will occur every 128us
 ISR(TIMER2_OVF_vect) //Timer2's counter has overflowed 
 {
-  timer2.T2_increment_overflow_count(); //increment the timer2 overflow counter
+  timer2.increment_overflow_count(); //increment the timer2 overflow counter
 }
 
 //define class constructor method
 eRCaGuy_Timer2_Counter::eRCaGuy_Timer2_Counter()
 {
   //initialize member variables
-  _T2_overflow_count = 0;
-  _T2_total_count = 0;
+  _overflow_count = 0;
+  _total_count = 0;
 }
 
 //setup_T2() --Configure Timer2
 //This function MUST be called before any of the other Timer2 functions will work.  This function will generally only be called one time in your setup() loop. "setup_T2()" prepares Timer2 and speeds it up to provide greater precision than micros() can give.
-void eRCaGuy_Timer2_Counter::setup_T2()
+void eRCaGuy_Timer2_Counter::setup()
 {
   //backup variables
   _tccr2a_save = TCCR2A; //first, backup some values
@@ -154,73 +153,72 @@ void eRCaGuy_Timer2_Counter::setup_T2()
 }  
   
 //get total count for Timer2
-unsigned long eRCaGuy_Timer2_Counter::get_T2_count()
+unsigned long eRCaGuy_Timer2_Counter::get_count()
 {
   noInterrupts(); //prepare for critical section of code
   uint8_t tcnt2_save = TCNT2; //grab the counter value from Timer2
-  boolean flag_save = bitRead(TIFR2,0); //grab the timer2 overflow flag value
+  boolean flag_save = bitRead(TIFR2,0); //grab the timer2 overflow flag value; see datasheet pg. 160
   if (flag_save) { //if the overflow flag is set
     tcnt2_save = TCNT2; //update variable just saved since the overflow flag could have just tripped between previously saving the TCNT2 value and reading bit 0 of TIFR2.  
                         //If this is the case, TCNT2 might have just changed from 255 to 0, and so we need to grab the new value of TCNT2 to prevent an error of up 
                         //to 127.5us in any time obtained using the T2 counter (ex: T2_micros). (Note: 255 counts / 2 counts/us = 127.5us)
                         //Note: this line of code DID in fact fix the error just described, in which I periodically saw an error of ~127.5us in some values read in
                         //by some PWM read code I wrote.
-    _T2_overflow_count++; //force the overflow count to increment
+    _overflow_count++; //force the overflow count to increment
     TIFR2 |= 0b00000001; //reset Timer2 overflow flag since we just manually incremented above; see datasheet pg. 160; this prevents execution of Timer2's overflow ISR
   }
-  _T2_total_count = _T2_overflow_count*256 + tcnt2_save; //get total Timer2 count
+  _total_count = _overflow_count*256 + tcnt2_save; //get total Timer2 count
   interrupts(); //allow interrupts again
-  return _T2_total_count;
+  return _total_count;
 }
 
 //get the time in microseconds, as determined by Timer2; the precision will be 0.5 microseconds instead of the 4 microsecond precision of micros()
-float eRCaGuy_Timer2_Counter::get_T2_micros()
+float eRCaGuy_Timer2_Counter::get_micros()
 {
-  float T2_micros = get_T2_count()/2.0; 
-  return T2_micros;
+  return get_count()/2.0; 
 }
 
 //reset Timer2's counters
-void eRCaGuy_Timer2_Counter::reset_T2()
+void eRCaGuy_Timer2_Counter::reset()
 {
-  _T2_overflow_count = 0; //reset overflow counter
-  _T2_total_count = 0; //reset total counter
+  _overflow_count = 0; //reset overflow counter
+  _total_count = 0; //reset total counter
   TCNT2 = 0; //reset Timer2 counter
   TIFR2 |= 0b00000001; //reset Timer2 overflow flag; see datasheet pg. 160; this prevents an immediate execution of Timer2's overflow ISR
 }
 
 //undo configuration changes for Timer2
-void eRCaGuy_Timer2_Counter::revert_T2_to_normal()
+void eRCaGuy_Timer2_Counter::revert_to_normal()
 {
-  T2_overflow_interrupt_off(); //turn off Timer2 overflow interrupts
+  overflow_interrupt_off(); //turn off Timer2 overflow interrupts
   TCCR2A = _tccr2a_save; //restore default settings
   TCCR2B = _tccr2b_save; //restore default settings
 }
 
 //same as revert_T2_to_normal()
-void eRCaGuy_Timer2_Counter::unsetup_T2()
+void eRCaGuy_Timer2_Counter::unsetup()
 {
-  revert_T2_to_normal();
+  revert_to_normal();
 }
 
 //Turn off the Timer2 Overflow Interrupt
-void eRCaGuy_Timer2_Counter::T2_overflow_interrupt_off()
+void eRCaGuy_Timer2_Counter::overflow_interrupt_off()
 {
 //  TIMSK2 &= 0b11111110; //use this code to DISABLE the Timer2 overflow interrupt; see datasheet pg. 159-160
   TIMSK2 &= ~(_BV(TOIE2)); //alternate code to do the above; see here for use of _BV: http://194.81.104.27/~brian/microprocessor/BVMacro.pdf 
 }
 
 //Turn the Timer2 Overflow Interrupt Back On
-void eRCaGuy_Timer2_Counter::T2_overflow_interrupt_on()
+void eRCaGuy_Timer2_Counter::overflow_interrupt_on()
 {
 //  TIMSK2 |= 0b00000001; //enable Timer2 overflow interrupt. (by making the right-most bit in TIMSK2 a 1); see datasheet pg. 159-160
   TIMSK2 |= _BV(TOIE2); //alternate code to do the above; see here for use of _BV: http://194.81.104.27/~brian/microprocessor/BVMacro.pdf 
 }
 
 //Increment overflow counter
-void eRCaGuy_Timer2_Counter::T2_increment_overflow_count()
+void eRCaGuy_Timer2_Counter::increment_overflow_count()
 {
-  _T2_overflow_count++;
+  _overflow_count++;
 }
   
   
