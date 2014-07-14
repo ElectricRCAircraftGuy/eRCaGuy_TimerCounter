@@ -7,7 +7,7 @@ Visit my blog at http://electricrcaircraftguy.blogspot.com/
 -Please support my work & contributions by buying something here: https://sites.google.com/site/ercaguystore1/
 My original post containing this code can be found here: http://electricrcaircraftguy.blogspot.com/2014/02/Timer2Counter-more-precise-Arduino-micros-function.html
 Written: 7 Dec. 2013
-Last Updated: 30 May 2014
+Last Updated: 9 July 2014
 */
 
 /*
@@ -54,6 +54,8 @@ I heavily reference the 660 pg. Atmega328 datasheet, which can be found here:  h
 VERSION HISTORY:
 (most recent event on top; format year-month-day, ex: 20131211 is Dec. 11, 2013):
 ---------------------------------------------------------------------------------
+20140709 - fixed a major problem with my interrupts() call, which was allowing nested interrupts to occur whenever a call to the time 
+          (ex: "timer1.get_count()") was done within an already-occurring Interrupt Service Routine; I replaced "interrupts();" with "SREG = SREG_old;"
 20140530 - changed the function (method) names slightly to remove any reference to "T2" in the method names
 20140513 - made this code into a true Arduino library
 20140223 - minor change to documentation: added note about the Tone library being affected by this code too
@@ -155,6 +157,7 @@ void eRCaGuy_Timer2_Counter::setup()
 //get total count for Timer2
 unsigned long eRCaGuy_Timer2_Counter::get_count()
 {
+  uint8_t SREG_old = SREG; //back up the AVR Status Register; see example in datasheet on pg. 14, as well as Nick Gammon's "Interrupts" article - http://www.gammon.com.au/forum/?id=11488
   noInterrupts(); //prepare for critical section of code
   uint8_t tcnt2_save = TCNT2; //grab the counter value from Timer2
   boolean flag_save = bitRead(TIFR2,0); //grab the timer2 overflow flag value; see datasheet pg. 160
@@ -168,7 +171,9 @@ unsigned long eRCaGuy_Timer2_Counter::get_count()
     TIFR2 |= 0b00000001; //reset Timer2 overflow flag since we just manually incremented above; see datasheet pg. 160; this prevents execution of Timer2's overflow ISR
   }
   _total_count = _overflow_count*256 + tcnt2_save; //get total Timer2 count
-  interrupts(); //allow interrupts again
+  //interrupts(); //allow interrupts again; [updated 20140709] <--WARNING, DO ****NOT**** USE THIS METHOD AFTERALL, OR ELSE IT WILL RE-ENABLE GLOBAL INTERRUPTS IF YOU CALL THIS FUNCTION
+                  //DURING AN INTERRUPT SERVICE ROUTINE, THEREBY CAUSING NESTED INTERRUPTS, WHICH CAN REALLY SCREW THINGS UP.
+  SREG = SREG_old; //use this method instead, to re-enable interrupts if they were enabled before, or to leave them disabled if they were disabled before
   return _total_count;
 }
 
