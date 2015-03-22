@@ -81,7 +81,7 @@ volatile unsigned int pd = 0; //units of 0.5us; the pulse period (ie: time from 
 
 void setup() 
 {
-  pinMode(INPUT_PIN,INPUT);
+  pinMode(INPUT_PIN,INPUT_PULLUP); //use INPUT_PULLUP to keep the pin from floating and jumping around when nothing is connected
 
   //configure timer2
   timer2.setup();
