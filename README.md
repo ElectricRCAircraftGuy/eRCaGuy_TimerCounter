@@ -6,7 +6,7 @@ Readme last updated: 4 Aug. 2015
 -20150804 - updated links & formatting  
 -20140517 - readme written  
 
-##<a href="https://gumroad.com/l/eRCaGuy_ButtonReader" target="_blank">Click Here to Donate & Download</a>  
+##<a href="https://gumroad.com/l/eRCaGuy_Timer2_Counter" target="_blank">Click Here to Donate & Download</a>  
 
 ##Instructions  
 Donate and download above. Install the library into the Arduino IDE (using Sketch --> Include Library --> Add .ZIP Library), then run the examples to see how to use the library. You may view the examples in the IDE under File --> Examples --> eRCaGuy_TimerCounter.  
