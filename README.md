@@ -1,7 +1,15 @@
-Readme last updated: 17 May 2014
+##Readme for eRCaGuy_TimerCounter   
+My Gabriel Staples  
+Readme last updated: 4 Aug. 2015  
 
-**Instructions**  
-Download the code by clicking "Download ZIP" to the right.  Extract the files, and install the library by renaming the main folder to "eRCaGuy_Timer2_Counter," and then copying the whole thing to the Arduino "libraries" directory in your main "Sketches" folder.  Restart your Arduino IDE (Integrated Development Environment).  Now, you may view the examples in the IDE under File --> Examples --> eRCaGuy_Timer2_Counter.
+**Readme Update History (newest on top)**  
+-20150804 - updated links & formatting  
+-20140517 - readme written  
+
+##<a href="https://gumroad.com/l/eRCaGuy_ButtonReader" target="_blank">Click Here to Donate & Download</a>  
+
+##Instructions  
+Donate and download above. Install the library into the Arduino IDE (using Sketch --> Include Library --> Add .ZIP Library), then run the examples to see how to use the library. You may view the examples in the IDE under File --> Examples --> eRCaGuy_TimerCounter.
 
 **Basic Summary**  
 "I wrote a "libary" to get 0.5us precision on a "micros()" replacement function, so that I can get repeatable results reading a PWM or PPM signal, to within 1us.  I searched all around the internet and could not find something comparable (or that was easy to use, and maintained the Arduino's ability to write PWM signals via the Servo Libary), so I think this is my first real contribution to the world of Arduino and Radio Control."  
