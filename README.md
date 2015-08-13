@@ -2,6 +2,9 @@
 My Gabriel Staples  
 Readme last updated: 4 Aug. 2015  
 
+##License: GPLv3 or later (ignore whatever the files say; it is GPLv3)  
+-I'll correct the license in the files later.
+
 **Readme Update History (newest on top)**  
 -20150804 - updated links & formatting  
 -20140517 - readme written  
