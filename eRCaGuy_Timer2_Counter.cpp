@@ -170,7 +170,7 @@ unsigned long eRCaGuy_Timer2_Counter::get_count()
     _overflow_count++; //force the overflow count to increment
     TIFR2 |= 0b00000001; //reset Timer2 overflow flag since we just manually incremented above; see datasheet pg. 160; this prevents execution of Timer2's overflow ISR
   }
-  _total_count = _overflow_count*256 + tcnt2_save; //get total Timer2 count
+  _total_count = _overflow_count*256 | tcnt2_save; //get total Timer2 count
   //interrupts(); //allow interrupts again; [updated 20140709] <--WARNING, DO ****NOT**** USE THIS METHOD AFTERALL, OR ELSE IT WILL RE-ENABLE GLOBAL INTERRUPTS IF YOU CALL THIS FUNCTION
                   //DURING AN INTERRUPT SERVICE ROUTINE, THEREBY CAUSING NESTED INTERRUPTS, WHICH CAN REALLY SCREW THINGS UP.
   SREG = SREG_old; //use this method instead, to re-enable interrupts if they were enabled before, or to leave them disabled if they were disabled before
