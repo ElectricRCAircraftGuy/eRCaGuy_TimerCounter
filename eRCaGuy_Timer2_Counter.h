@@ -85,7 +85,6 @@ class eRCaGuy_Timer2_Counter
 	//volatile (used in ISRs)
 	volatile unsigned long _overflow_count; //Timer2 overflow counter; updated in ISR, so must be declared volatile (see here: http://arduino.cc/en/Reference/Volatile)
 	  //GS: for more info on static class members, see here: http://www.tutorialspoint.com/cplusplus/cpp_static_members.htm (or PDF pg. 148-149)
-	unsigned long _total_count; //Timer2 total counter
 	byte _tccr2a_save; //will be used to backup default settings
 	byte _tccr2b_save; //will be used to backup default settings
 };
