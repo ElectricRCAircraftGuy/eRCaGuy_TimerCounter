@@ -56,6 +56,9 @@ GS: *************NOTE TO SELF************: I referred to the TimerOne Library (h
  #include <WProgram.h>
 #endif
 
+//this has to be declared in order to make it "friend" below
+extern "C" void TIMER2_OVF_vect();
+
 class eRCaGuy_Timer2_Counter
 {
   public:
@@ -73,7 +76,6 @@ class eRCaGuy_Timer2_Counter
 	void unsetup();
 	void overflow_interrupt_off();
 	void overflow_interrupt_on();
-	void increment_overflow_count();
 	
 	//public variables:
 	//N/A
@@ -83,7 +85,8 @@ class eRCaGuy_Timer2_Counter
 	//N/A
     //Declare private variables (ie: "member variables," or variables which are members of and accessible by this class only):
 	//volatile (used in ISRs)
-	volatile unsigned long _overflow_count; //Timer2 overflow counter; updated in ISR, so must be declared volatile (see here: http://arduino.cc/en/Reference/Volatile)
+	volatile static unsigned long _overflow_count; //Timer2 overflow counter; updated in ISR, so must be declared volatile (see here: http://arduino.cc/en/Reference/Volatile)
+	friend void TIMER2_OVF_vect(); //let the ISR access _overflow_count, despite it being a private member
 	  //GS: for more info on static class members, see here: http://www.tutorialspoint.com/cplusplus/cpp_static_members.htm (or PDF pg. 148-149)
 	unsigned long _total_count; //Timer2 total counter
 	byte _tccr2a_save; //will be used to backup default settings
