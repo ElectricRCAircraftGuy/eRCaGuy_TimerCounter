@@ -113,13 +113,16 @@ Additional Resources:
 
 #include "eRCaGuy_Timer2_Counter.h"
 
+//define the static class property
+volatile unsigned long eRCaGuy_Timer2_Counter::_overflow_count;
+
 //pre-instantiate an object of this library class, for use by the ISR; call it "timer2"
 eRCaGuy_Timer2_Counter timer2;
 
 //Interrupt Service Routine (ISR) for when Timer2's counter overflows; this will occur every 128us
 ISR(TIMER2_OVF_vect) //Timer2's counter has overflowed 
 {
-  timer2.increment_overflow_count(); //increment the timer2 overflow counter
+  eRCaGuy_Timer2_Counter::_overflow_count++; //increment the timer2 overflow counter
 }
 
 //define class constructor method
@@ -219,13 +222,3 @@ void eRCaGuy_Timer2_Counter::overflow_interrupt_on()
 //  TIMSK2 |= 0b00000001; //enable Timer2 overflow interrupt. (by making the right-most bit in TIMSK2 a 1); see datasheet pg. 159-160
   TIMSK2 |= _BV(TOIE2); //alternate code to do the above; see here for use of _BV: http://194.81.104.27/~brian/microprocessor/BVMacro.pdf 
 }
-
-//Increment overflow counter
-void eRCaGuy_Timer2_Counter::increment_overflow_count()
-{
-  _overflow_count++;
-}
-  
-  
-
-
