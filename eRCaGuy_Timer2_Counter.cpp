@@ -186,10 +186,12 @@ float eRCaGuy_Timer2_Counter::get_micros()
 //reset Timer2's counters
 void eRCaGuy_Timer2_Counter::reset()
 {
+  TCCR2B = 0; //stop the timer
   _overflow_count = 0; //reset overflow counter
   _total_count = 0; //reset total counter
   TCNT2 = 0; //reset Timer2 counter
   TIFR2 |= 0b00000001; //reset Timer2 overflow flag; see datasheet pg. 160; this prevents an immediate execution of Timer2's overflow ISR
+  TCCR2B = _BV(CS21); //restart the timer at F_CPU/8
 }
 
 //undo configuration changes for Timer2
